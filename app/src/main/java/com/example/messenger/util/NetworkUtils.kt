@@ -56,7 +56,6 @@ fun rememberNetworkStatus(): Boolean {
             try {
                 connectivityManager.unregisterNetworkCallback(callback)
             } catch (e: Exception) {
-                // Игнорируем, если колбэк уже был отписан
             }
         }
     }

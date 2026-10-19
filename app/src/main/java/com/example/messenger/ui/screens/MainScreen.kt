@@ -265,7 +265,7 @@ fun MainScreen(
                                     .clickable {
                                         isFriendsOpen = false
                                         val inviteLink =
-                                            "messenger://invite?token=${System.currentTimeMillis()}&expires=1h"
+                                            "messenger://messenger.app/invite?token=${System.currentTimeMillis()}&expires=1h"
                                         val sendIntent = Intent().apply {
                                             action = Intent.ACTION_SEND
                                             putExtra(

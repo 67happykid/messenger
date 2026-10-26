@@ -34,6 +34,10 @@
                     android:scheme="messenger"
                     android:host="messenger.app"
                     android:pathPrefix="/invite" />
+                <data
+                    android:scheme="messenger"
+                    android:host="messenger.app"
+                    android:pathPrefix="/invitecall" />
             </intent-filter>
         </activity>
     </application>

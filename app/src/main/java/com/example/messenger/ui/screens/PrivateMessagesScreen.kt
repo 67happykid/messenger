@@ -1,6 +1,7 @@
 package com.example.messenger.ui.screens
 
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.animation.core.animateDpAsState
 import com.example.messenger.util.rememberNetworkStatus
 import androidx.compose.material.icons.filled.Search
@@ -58,12 +59,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.messenger.ui.theme.MainBackground
-import com.example.messenger.ui.theme.LayoutBackground
-import com.example.messenger.ui.theme.SearchField
-import com.example.messenger.ui.theme.DarkThemeTextColor
-import com.example.messenger.ui.theme.StrokeColor
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.drawWithContent
@@ -73,29 +70,36 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import com.example.messenger.ui.theme.ChatBackground
+import com.example.messenger.ui.navigation.Screen
+import com.example.messenger.ui.theme.AppTheme
+
+
+data class ChatMessage(
+    val id: String = java.util.UUID.randomUUID().toString(),
+    val text: String,
+    val isFromMe: Boolean = true,
+    val timestamp: Long = System.currentTimeMillis()
+)
 
 @Composable
 fun PrivateMessagesScreen(
     onSettingsClick: () -> Unit = {},
-    onProfileClick: () -> Unit = {}
+    onProfileClick: () -> Unit = {},
+    onCallClick: () -> Unit = {},
+    onVideocallClick: () -> Unit = {},
 ){
     var searchQuery by rememberSaveable { mutableStateOf("") }
     var messageQuery by rememberSaveable { mutableStateOf("") }
-
+    val messages = rememberSaveable() { mutableStateListOf<ChatMessage>() }
     var isDrafted by remember { mutableStateOf(false) }
 
-    //Статус подключения к интернету
-    //val isConnected = rememberNetworkStatus()
 
-    //Задний фон
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MainBackground)
+            .background(AppTheme.colors.mainBackground)
             .imePadding()
     ) {
-        //Все области
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -104,47 +108,48 @@ fun PrivateMessagesScreen(
                 .padding(bottom = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            //Верхняя область
-                Column(
+            Column(
+                modifier = Modifier
+                    .height(108.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(AppTheme.colors.layoutBackground),
+            ) {
+                Row(
                     modifier = Modifier
-                        .height(108.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(LayoutBackground),
-                    ){
-                    Row(
+                        .fillMaxWidth()
+                        .height(64.dp)
+                ) {
+                    Text(
+                        text = "User Nickname",
+                        color = AppTheme.colors.textColor,
+                        fontSize = 22.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(64.dp)
-                    ){
-                        Text(
-                            text = "User Nickname",
-                            color = DarkThemeTextColor,
-                            fontSize = 22.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
+                            .padding(horizontal = 16.dp, vertical = 16.dp),
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    val ctx = LocalContext.current
+                    Box(
+                        modifier = Modifier
+                            .padding(vertical = 8.dp)
+                            .size(48.dp)
+                            .clip(CircleShape)
+                            .background(Color(0xFFD32F2F))
+                            .clickable { Toast.makeText(ctx, "Вас могнули... ?:)",
+                                Toast.LENGTH_SHORT).show() }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.CallEnd,
+                            contentDescription = "Settings",
+                            tint = AppTheme.colors.textColor,
                             modifier = Modifier
-                                .padding(horizontal = 16.dp, vertical = 16.dp),
+                                .padding(horizontal = 12.dp, vertical = 10.dp)
+                                .size(24.dp)
                         )
-                        Spacer(modifier = Modifier.weight(1f))
-                        Box(
-                            modifier = Modifier
-                                .padding(vertical = 8.dp)
-                                .size(48.dp)
-                                .clip(CircleShape)
-                                .background(Color(0xFFD32F2F))
-                                .clickable { TODO("Добавить метод onProfileClick()") }
-                        ){
-                            Icon(
-                                imageVector = Icons.Default.CallEnd,
-                                contentDescription = "Settings",
-                                tint = DarkThemeTextColor,
-                                modifier = Modifier
-                                    .padding(horizontal = 12.dp, vertical = 10.dp)
-                                    .size(24.dp)
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(16.dp))
                     }
+                    Spacer(modifier = Modifier.width(16.dp))
+                }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -152,32 +157,29 @@ fun PrivateMessagesScreen(
                         .padding(horizontal = 16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    //Поле поиска
                     Row(
                         modifier = Modifier
                             .width(160.dp)
                             .height(36.dp)
                             .clip(RoundedCornerShape(32.dp))
-                            .background(SearchField),
+                            .background(AppTheme.colors.searchField),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Spacer(modifier = Modifier.width(4.dp))
-                        //Иконка поиска
                         Icon(
                             imageVector = Icons.Default.Search,
                             contentDescription = "Search",
-                            tint = DarkThemeTextColor,
+                            tint = AppTheme.colors.textColor,
                             modifier = Modifier
                                 .size(16.dp)
                         )
 
-                        //Поле поиска чатов
                         BasicTextField(
                             value = searchQuery,
                             onValueChange = { searchQuery = it },
                             singleLine = true,
-                            textStyle = TextStyle(color = DarkThemeTextColor, fontSize = 13.sp),
+                            textStyle = TextStyle(color = AppTheme.colors.textColor, fontSize = 13.sp),
                             modifier = Modifier
                                 .fillMaxWidth(),
                             decorationBox = { innerTextField ->
@@ -185,7 +187,7 @@ fun PrivateMessagesScreen(
                                     if (searchQuery.isEmpty()) {
                                         Text(
                                             "Search",
-                                            color = DarkThemeTextColor,
+                                            color = AppTheme.colors.textColor,
                                             fontSize = 13.sp,
                                             maxLines = 1
                                         )
@@ -196,38 +198,18 @@ fun PrivateMessagesScreen(
                         )
                     }
 
-                    //Распорка, чтобы прижать вправо
                     Spacer(modifier = Modifier.weight(1f))
-
-    //                //Состояние сети
-    //                var isConnected by remember { mutableStateOf(true) }
-    //
-    //                IconButton(
-    //                    onClick = { isConnected = !isConnected},
-    //                    modifier = Modifier
-    //                        .size(36.dp)
-    //                ) {
-    //                    Icon(
-    //                        imageVector = if (isConnected) Icons.Default.Wifi
-    //                        else Icons.Default.WifiOff,
-    //                        contentDescription = "Network Status",
-    //                        tint = if (isConnected) DarkThemeTextColor
-    //                        else LayoutBackground,
-    //                        modifier = Modifier
-    //                            .size(20.dp)
-    //                    )
-    //                }
                     Box(
                         modifier = Modifier
                             .size(36.dp)
                             .clip(CircleShape)
-                            .background(LayoutBackground)
-                            .clickable { TODO("Добавить метод onProfileClick()") }
-                    ){
+                            .background(AppTheme.colors.layoutBackground)
+                            .clickable {onCallClick()}
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Call,
                             contentDescription = "Settings",
-                            tint = DarkThemeTextColor,
+                            tint = AppTheme.colors.textColor,
                             modifier = Modifier
                                 .padding(horizontal = 6.dp, vertical = 6.dp)
                                 .size(24.dp)
@@ -239,148 +221,138 @@ fun PrivateMessagesScreen(
                         modifier = Modifier
                             .size(36.dp)
                             .clip(CircleShape)
-                            .background(LayoutBackground)
-                            .clickable { TODO("Добавить метод onProfileClick()") }
-                    ){
+                            .background(AppTheme.colors.layoutBackground)
+                            .clickable {onVideocallClick()}
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Videocam,
                             contentDescription = "Settings",
-                            tint = DarkThemeTextColor,
+                            tint = AppTheme.colors.textColor,
                             modifier = Modifier
                                 .padding(horizontal = 6.dp, vertical = 6.dp)
                                 .size(24.dp)
                         )
                     }
-                    //Кнопка настроек
+                    val ctx = LocalContext.current
                     IconButton(
-                        onClick = { TODO("Добавить метод onSettingsClick") },
+                        onClick = { Toast.makeText(ctx, "Вас могнули... ?:)",
+                            Toast.LENGTH_SHORT).show() },
                         modifier = Modifier
                             .size(36.dp)
                     ) {
-                        //Иконка настроек
                         Icon(
                             imageVector = Icons.Default.Settings,
                             contentDescription = "Settings",
-                            tint = DarkThemeTextColor,
+                            tint = AppTheme.colors.textColor,
                             modifier = Modifier
                                 .size(24.dp)
                         )
                     }
-
-                    //Кнопка профиля
-
-                }}
-            //Область панелей с фиксированием свайпа пальцем
-            BoxWithConstraints(
+                }
+            }
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxSize()
                     .weight(1f)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(AppTheme.colors.layoutBackground)
             ) {
-                //Ширина свёрнутой панели
-                val collapsedWidth = 72.dp
-
-                //Ширина зазора
-                val gap = 8.dp
-
-                //Ширина развёрнутой панели
-                val expandedWidth = maxWidth - collapsedWidth - gap
-
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(LayoutBackground)
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(vertical = 12.dp, horizontal = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    //Вертикально прокручиваемый список чатов
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(vertical = 12.dp, horizontal = 8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        //Временные заглушки для проверки скролла 20 чатов
-                        items(20) { index ->
-                            Row(
+                    items(/*20*/messages.size) { index ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(36.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(AppTheme.colors.messageBackground)
+                                .padding(horizontal = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Text(
+                                text = "${/*"Let's start chat $index".repeat(index + 1)*/messages[index].text}",
+                                color = AppTheme.colors.textColor,
+                                fontSize = 16.sp,
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .heightIn(36.dp)
-                                    .clip(RoundedCornerShape(16.dp))
-                                    .background(Color(0xFF1C1F1F))
-                                    .padding(horizontal = 8.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(10.dp)
-                            ) {
-                                Text(
-                                    text = "${"Let's start chat $index".repeat(index + 1)}",
-                                    color = DarkThemeTextColor,
-                                    fontSize = 16.sp,
-                                    modifier = Modifier
-                                        .padding(horizontal = 16.dp, vertical = 16.dp),
-                                )
-                            }
+                                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                            )
                         }
                     }
                 }
-            }
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(16.dp))
+                .background(AppTheme.colors.layoutBackground)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.Bottom
+        ) {
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(LayoutBackground)
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                verticalAlignment = Alignment.Bottom
+                    .weight(1f)
+                    .heightIn(min = 36.dp, max = 120.dp)
+                    .clip(RoundedCornerShape(32.dp))
+                    .background(AppTheme.colors.searchField)
+                    .padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                //Поле поиска
-                Row(
+                Spacer(modifier = Modifier.width(4.dp))
+                BasicTextField(
+                    value = messageQuery,
+                    onValueChange = { messageQuery = it },
+                    textStyle = TextStyle(color = AppTheme.colors.textColor, fontSize = 13.sp),
                     modifier = Modifier
-                        .weight(1f)
-                        .heightIn(min = 36.dp, max = 120.dp)
-                        .clip(RoundedCornerShape(32.dp))
-                        .background(SearchField)
-                        .padding(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Spacer(modifier = Modifier.width(4.dp))
-                    BasicTextField(
-                        value = messageQuery,
-                        onValueChange = { messageQuery = it },
-                        textStyle = TextStyle(color = DarkThemeTextColor, fontSize = 13.sp),
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        decorationBox = { innerTextField ->
-                            Box(contentAlignment = Alignment.CenterStart) {
-                                if (messageQuery.isEmpty()) {
-                                    Text(
-                                        "Write message",
-                                        color = DarkThemeTextColor,
-                                        fontSize = 13.sp,
-                                        maxLines = 6
-                                    )
-                                }
-                                innerTextField()
+                        .fillMaxWidth(),
+                    decorationBox = { innerTextField ->
+                        Box(contentAlignment = Alignment.CenterStart) {
+                            if (messageQuery.isEmpty()) {
+                                Text(
+                                    "Write message",
+                                    color = AppTheme.colors.textColor,
+                                    fontSize = 13.sp,
+                                    maxLines = 6
+                                )
                             }
+                            innerTextField()
                         }
-                    )
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                Box(
+                    }
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            val ctx = LocalContext.current
+            Box(
+                modifier = Modifier
+                    .size(36.dp)
+                    .clip(CircleShape)
+                    .background(Color(0xFF9999FF))
+                    .clickable { /*Toast.makeText(ctx, "Вас могнули... ?:)",
+                        Toast.LENGTH_SHORT).show()*/
+                        if (messageQuery.isNotBlank()) {
+                            messages.add(
+                                ChatMessage(
+                                    text = messageQuery.trim(),
+                                    isFromMe = true
+                                )
+                            )
+                            messageQuery = ""
+                        }}
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Send,
+                    contentDescription = "Settings",
+                    tint = AppTheme.colors.textColor,
                     modifier = Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
-                        .background(Color(0xFF9999FF))
-                        .clickable { TODO("Добавить метод SendClick()") }
-                ){
-                    Icon(
-                        imageVector = Icons.Default.Send,
-                        contentDescription = "Settings",
-                        tint = DarkThemeTextColor,
-                        modifier = Modifier
-                            .padding(horizontal = 6.dp, vertical = 6.dp)
-                            .size(24.dp)
-                    )
-                }
+                        .padding(horizontal = 6.dp, vertical = 6.dp)
+                        .size(24.dp)
+                )
             }
         }
+    }
     }
 }

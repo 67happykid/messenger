@@ -2,36 +2,87 @@ package com.example.messenger.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import com.example.messenger.ui.theme.MessageBackgroundDark
 
-// Привязываем ваши цвета из Color.kt к цветовой схеме приложения
+data class AppColors(
+    val mainBackground: Color,
+    val layoutBackground: Color,
+    val chatBackground: Color,
+    val searchField: Color,
+    val strokeColor: Color,
+    val textColor: Color,
+    val messageBackground: Color,
+    val iconBackground: Color
+)
+
+val DarkAppColors = AppColors(
+    mainBackground = MainBackgroundDark,
+    layoutBackground = LayoutBackgroundDark,
+    chatBackground = ChatBackgroundDark,
+    searchField = SearchFieldDark,
+    strokeColor = StrokeColorDark,
+    textColor = TextColorDark,
+    messageBackground = MessageBackgroundDark,
+    iconBackground = IconBackgroundDark
+)
+
+val LightAppColors = AppColors(
+    mainBackground = MainBackgroundLight,
+    layoutBackground = LayoutBackgroundLight,
+    chatBackground = ChatBackgroundLight,
+    searchField = SearchFieldLight,
+    strokeColor = StrokeColorLight,
+    textColor = TextColorLight,
+    messageBackground = MessageBackgroundLight,
+    iconBackground = IconBackgroundLight
+
+)
+
 private val DarkColorScheme = darkColorScheme(
-    primary = MainBackground,
-    secondary = LayoutBackground,
-    tertiary = SearchField,
-    background = LayoutBackground,
-    surface = MainBackground
+    background = LayoutBackgroundDark,
+    surface = MainBackgroundDark,
+    onSurface = TextColorDark,
+    outline = StrokeColorDark
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = MainBackground,
-    secondary = LayoutBackground,
-    tertiary = SearchField,
-    background = LayoutBackground,
-    surface = MainBackground
+    background = LayoutBackgroundLight,
+    surface = MainBackgroundLight,
+    onSurface = TextColorLight,
+    outline = StrokeColorLight
 )
+
+val LocalAppColors = staticCompositionLocalOf { LightAppColors }
+
+object AppTheme {
+    val colors: AppColors
+        @Composable
+        get() = LocalAppColors.current
+}
+
+val ColorScheme.searchField: Color
+    @Composable
+    get() = if (isSystemInDarkTheme()) SearchFieldDark else SearchFieldLight
+
+val ColorScheme.chatBackground: Color
+    @Composable
+    get() = if (isSystemInDarkTheme()) ChatBackgroundDark else ChatBackgroundLight
 
 @Composable
 fun MessengerTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Отключаем динамические цвета Android 12+, чтобы использовалась только ваша палитра
-    dynamicColor: Boolean = false,
+    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -39,14 +90,18 @@ fun MessengerTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-
         darkTheme -> DarkColorScheme
-        else -> DarkColorScheme // По умолчанию используем темную тему
+        else -> LightColorScheme
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+    //Цвета, не зависящие от dynamic color
+    val appColors = if (darkTheme) DarkAppColors else LightAppColors
+
+    CompositionLocalProvider(LocalAppColors provides appColors) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            content = content
+        )
+    }
 }

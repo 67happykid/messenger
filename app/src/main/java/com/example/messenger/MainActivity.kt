@@ -1,47 +1,55 @@
 package com.example.messenger
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import com.example.messenger.ui.screens.MainScreen
 import com.example.messenger.ui.theme.MessengerTheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.messenger.ui.screens.ErrorScreen
+import com.example.messenger.ui.screens.LoadingScreen
+import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
+
+    private var inviteToken by mutableStateOf<String?>(null)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
+        handleIntent(intent)
+
         setContent {
             MessengerTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                /*val screenNumber = Random.nextInt(3)
+                when (screenNumber) {
+                    0 -> MainScreen(inviteToken)
+                    1 -> LoadingScreen()
+                    2 -> ErrorScreen()
+                }*/
+                MainScreen(inviteToken = inviteToken)
             }
         }
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleIntent(intent)
+    }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MessengerTheme {
-        Greeting("Android")
+    private fun handleIntent(intent: Intent?) {
+        if (intent?.action == Intent.ACTION_VIEW) {
+            val data = intent.data
+            if (data != null && data.scheme == "messenger" && data.host == "invite") {
+                inviteToken = data.getQueryParameter("token")
+            }
+        }
     }
 }

@@ -49,6 +49,33 @@ val LightAppColors = AppColors(
 
 )
 
+data class AppColors(
+    val mainBackground: Color,
+    val layoutBackground: Color,
+    val chatBackground: Color,
+    val searchField: Color,
+    val strokeColor: Color,
+    val textColor: Color
+)
+
+val DarkAppColors = AppColors(
+    mainBackground = MainBackgroundDark,
+    layoutBackground = LayoutBackgroundDark,
+    chatBackground = ChatBackgroundDark,
+    searchField = SearchFieldDark,
+    strokeColor = StrokeColorDark,
+    textColor = TextColorDark
+)
+
+val LightAppColors = AppColors(
+    mainBackground = MainBackgroundLight,
+    layoutBackground = LayoutBackgroundLight,
+    chatBackground = ChatBackgroundLight,
+    searchField = SearchFieldLight,
+    strokeColor = StrokeColorLight,
+    textColor = TextColorLight
+)
+
 private val DarkColorScheme = darkColorScheme(
     background = LayoutBackgroundDark,
     surface = MainBackgroundDark,

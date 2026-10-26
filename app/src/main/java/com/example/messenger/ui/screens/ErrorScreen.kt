@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,21 +24,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.messenger.ui.theme.DarkThemeTextColor
-import com.example.messenger.ui.theme.LayoutBackground
-import com.example.messenger.ui.theme.MainBackground
+import com.example.messenger.ui.theme.AppTheme
 
 @Composable
 fun ErrorScreen(
-    onRetryClick: () -> Unit
+    onRetryClick: () -> Unit = {}
 ) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MainBackground)
+            .background(AppTheme.colors.mainBackground)
             .padding(24.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -45,11 +43,12 @@ fun ErrorScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
-                .background(LayoutBackground)
+                .background(AppTheme.colors.mainBackground)
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            //Иконка ошибки
             Box(
                 modifier = Modifier
                     .size(56.dp)
@@ -60,7 +59,7 @@ fun ErrorScreen(
                 Icon(
                     imageVector = Icons.Default.Warning,
                     contentDescription = "Error",
-                    tint = DarkThemeTextColor,
+                    tint = AppTheme.colors.textColor,
                     modifier = Modifier
                         .size(28.dp)
                 )
@@ -68,9 +67,8 @@ fun ErrorScreen(
 
             Text(
                 text = "Something went wrong",
-                color = DarkThemeTextColor,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
+                color = AppTheme.colors.textColor,
+                style = MaterialTheme.typography.titleLarge
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -87,9 +85,8 @@ fun ErrorScreen(
             ) {
                 Text(
                     text = "Retry",
-                    color = DarkThemeTextColor,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold
+                    color = AppTheme.colors.textColor,
+                    style = MaterialTheme.typography.titleMedium
                 )
             }
         }

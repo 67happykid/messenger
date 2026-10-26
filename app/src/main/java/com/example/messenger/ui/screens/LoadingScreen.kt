@@ -1,6 +1,5 @@
 package com.example.messenger.ui.screens
 
-import android.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,21 +7,23 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.messenger.ui.theme.DarkThemeTextColor
-import com.example.messenger.ui.theme.MainBackground
+import com.example.messenger.ui.theme.AppTheme
+import com.example.messenger.ui.theme.chatBackground
+
 
 @Composable
 fun LoadingScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MainBackground),
+            .background(AppTheme.colors.mainBackground),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -31,7 +32,7 @@ fun LoadingScreen() {
         ) {
             //Кружок загрузки
             CircularProgressIndicator(
-                color = DarkThemeTextColor,
+                color = AppTheme.colors.textColor,
                 modifier = Modifier
                     .size(48.dp),
                 strokeWidth = 4.dp
@@ -40,8 +41,8 @@ fun LoadingScreen() {
             //Текст под символом загрузки
             Text(
                 text = "Loading",
-                color = DarkThemeTextColor,
-                fontSize = 14.sp
+                color = AppTheme.colors.textColor,
+                style = MaterialTheme.typography.titleLarge
             )
         }
     }

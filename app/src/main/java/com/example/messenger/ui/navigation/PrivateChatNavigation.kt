@@ -1,5 +1,6 @@
 package com.example.messenger.ui.navigation
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -29,6 +30,13 @@ fun PrivateChatNavigation(
         Screen.VoiceScreen
     else Screen.MessageScreen
     var currentScreen by rememberSaveable { mutableStateOf(startScreen) }
+
+    BackHandler {
+        currentScreen = when (currentScreen) {
+            Screen.VoiceScreen -> Screen.MessageScreen
+            Screen.MessageScreen -> Screen.VoiceScreen
+        }
+    }
 
     AnimatedContent(
         targetState = currentScreen,

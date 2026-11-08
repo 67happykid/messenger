@@ -1,6 +1,7 @@
 package com.example.messenger.ui.screens
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.widget.Toast
 import androidx.compose.animation.core.animateDpAsState
 import com.example.messenger.util.rememberNetworkStatus
@@ -38,12 +39,14 @@ import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material.icons.filled.WifiOff
+import androidx.compose.material3.Button
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -59,8 +62,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.messenger.R
 import com.example.messenger.ui.theme.AppTheme
+import com.example.messenger.ui.theme.MessengerTheme
 import com.example.messenger.ui.theme.chatBackground
 
 @Composable
@@ -321,10 +326,10 @@ fun MainScreen(
                 }*/
 
                 val ctx = LocalContext.current
+
                 //Кнопка настроек
                 IconButton(
-                    onClick = { Toast.makeText(ctx, "Вас могнули... ?:)",
-                        Toast.LENGTH_SHORT).show() },
+                    onClick = onSettingsClick,
                     modifier = Modifier
                         .size(36.dp)
                 ) {
@@ -527,5 +532,30 @@ fun MainScreen(
                 }
             }
         }
+    }
+}
+
+@Preview(
+    name = "Главный - светлая",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    widthDp = 360,
+    heightDp = 800
+)
+@Preview(
+    name = "Главный - тёмная",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    widthDp = 360,
+    heightDp = 800
+)
+@Composable
+private fun MainScreenPreview() {
+    MessengerTheme(dynamicColor = false) {
+        MainScreen(
+            inviteToken = null,
+            onSettingsClick = {},
+            onProfileClick = {}
+        )
     }
 }

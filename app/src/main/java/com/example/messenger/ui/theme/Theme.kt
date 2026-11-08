@@ -55,6 +55,12 @@ private val LightColorScheme = lightColorScheme(
     outline = StrokeColorLight
 )
 
+enum class ThemeMod(val title: String){
+    SYSTEM("Тема системы"),
+    LIGHT("Светлая тема"),
+    DARK("Тёмная тема")
+}
+
 val LocalAppColors = staticCompositionLocalOf { LightAppColors }
 
 object AppTheme {
@@ -65,11 +71,11 @@ object AppTheme {
 
 val ColorScheme.searchField: Color
     @Composable
-    get() = if (isSystemInDarkTheme()) SearchFieldDark else SearchFieldLight
+    get() = AppTheme.colors.searchField
 
 val ColorScheme.chatBackground: Color
     @Composable
-    get() = if (isSystemInDarkTheme()) ChatBackgroundDark else ChatBackgroundLight
+    get() = AppTheme.colors.chatBackground
 
 @Composable
 fun MessengerTheme(
@@ -87,7 +93,19 @@ fun MessengerTheme(
     }
 
     //Цвета, не зависящие от dynamic color
-    val appColors = if (darkTheme) DarkAppColors else LightAppColors
+    val appColors =
+        if (dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            AppColors(
+                mainBackground = colorScheme.background,
+                layoutBackground = colorScheme.surfaceContainer,
+                chatBackground = colorScheme.surfaceContainerHigh,
+                searchField = colorScheme.surfaceContainerHighest,
+                strokeColor = colorScheme.outlineVariant,
+                textColor = colorScheme.onSurface
+            )
+        } else {
+            if (darkTheme) DarkAppColors else LightAppColors
+        }
 
     CompositionLocalProvider(LocalAppColors provides appColors) {
         MaterialTheme(

@@ -13,6 +13,41 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import com.example.messenger.ui.theme.MessageBackgroundDark
+
+data class AppColors(
+    val mainBackground: Color,
+    val layoutBackground: Color,
+    val chatBackground: Color,
+    val searchField: Color,
+    val strokeColor: Color,
+    val textColor: Color,
+    val messageBackground: Color,
+    val iconBackground: Color
+)
+
+val DarkAppColors = AppColors(
+    mainBackground = MainBackgroundDark,
+    layoutBackground = LayoutBackgroundDark,
+    chatBackground = ChatBackgroundDark,
+    searchField = SearchFieldDark,
+    strokeColor = StrokeColorDark,
+    textColor = TextColorDark,
+    messageBackground = MessageBackgroundDark,
+    iconBackground = IconBackgroundDark
+)
+
+val LightAppColors = AppColors(
+    mainBackground = MainBackgroundLight,
+    layoutBackground = LayoutBackgroundLight,
+    chatBackground = ChatBackgroundLight,
+    searchField = SearchFieldLight,
+    strokeColor = StrokeColorLight,
+    textColor = TextColorLight,
+    messageBackground = MessageBackgroundLight,
+    iconBackground = IconBackgroundLight
+
+)
 
 data class AppColors(
     val mainBackground: Color,

@@ -67,12 +67,17 @@ import com.example.messenger.R
 import com.example.messenger.ui.theme.AppTheme
 import com.example.messenger.ui.theme.MessengerTheme
 import com.example.messenger.ui.theme.chatBackground
+import androidx.compose.ui.platform.LocalInspectionMode
 
 @Composable
 fun MainScreen(
     inviteToken: String?,
     onSettingsClick: () -> Unit = {},
-    onProfileClick: () -> Unit = {}
+    onProfileClick: () -> Unit = {},
+    isChatListEmpty: Boolean = false,
+    isChannelListEmpty: Boolean = false,
+    onCreateChatClick: () -> Unit = {},
+    onCreateChannelClick: () -> Unit = {}
 ){
     if (inviteToken != null) {
         //Обрабатываем переход по ссылке-приглашению в друзья
@@ -88,7 +93,11 @@ fun MainScreen(
     var isFriendsOpen by rememberSaveable { mutableStateOf(false) }
 
     //Статус подключения к интернету
-    val isConnected = rememberNetworkStatus()
+    val isConnected = if (LocalInspectionMode.current) {
+        true
+    } else {
+        rememberNetworkStatus()
+    }
 
     //Задний фон
     Box(
@@ -406,62 +415,69 @@ fun MainScreen(
                             .background(AppTheme.colors.layoutBackground)
                     ) {
                         //Вертикально прокручиваемый список серверов
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(vertical = 12.dp, horizontal = 8.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                        ) {
-                            //Временная заглушка для проверки скрола на 15 серверах
-                            items(15) { index ->
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(52.dp)
-                                        .clip(RoundedCornerShape(16.dp))
-                                        .background(MaterialTheme.colorScheme.chatBackground)
-                                        .padding(horizontal = 8.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                                ) {
-                                    // Иконка сервера (всегда фиксирована у левого края, центрирована при 72dp)
-                                    Box(
+                        if (isChannelListEmpty) {
+                            EmptyListAction(
+                                actionText = "Создать канал",
+                                onClick = onCreateChannelClick
+                            )
+                        } else {
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(vertical = 12.dp, horizontal = 8.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                            ) {
+                                //Временная заглушка для проверки скрола на 15 серверах
+                                items(15) { index ->
+                                    Row(
                                         modifier = Modifier
-                                            .size(40.dp)
-                                            .clip(CircleShape)
-                                            .background(
-                                                if (index % 2 == 0) Color(0xFF5865F2) else Color(
-                                                    0xFF57F287
-                                                )
-                                            ),
-                                        contentAlignment = Alignment.Center
+                                            .fillMaxWidth()
+                                            .height(52.dp)
+                                            .clip(RoundedCornerShape(16.dp))
+                                            .background(MaterialTheme.colorScheme.chatBackground)
+                                            .padding(horizontal = 8.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(10.dp)
                                     ) {
-                                        Text(
-                                            text = "S${index + 1}",
-                                            color = AppTheme.colors.textColor,
-                                            style = MaterialTheme.typography.titleMedium
-                                        )
-                                    }
-
-                                    //Название сервера и статус (видны при расширении)
-                                    if (isServersExpanded) {
-                                        Column(
-                                            modifier = Modifier.weight(1f),
-                                            verticalArrangement = Arrangement.Center
+                                        // Иконка сервера (всегда фиксирована у левого края, центрирована при 72dp)
+                                        Box(
+                                            modifier = Modifier
+                                                .size(40.dp)
+                                                .clip(CircleShape)
+                                                .background(
+                                                    if (index % 2 == 0) Color(0xFF5865F2) else Color(
+                                                        0xFF57F287
+                                                    )
+                                                ),
+                                            contentAlignment = Alignment.Center
                                         ) {
                                             Text(
-                                                text = "Server Community ${index + 1}",
+                                                text = "S${index + 1}",
                                                 color = AppTheme.colors.textColor,
-                                                style = MaterialTheme.typography.titleMedium,
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis
+                                                style = MaterialTheme.typography.titleMedium
                                             )
-                                            Text(
-                                                text = "${(index + 1) * 14} members • online",
-                                                color = AppTheme.colors.textColor.copy(alpha = 0.6f),
-                                                style = MaterialTheme.typography.labelSmall,
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis
-                                            )
+                                        }
+
+                                        //Название сервера и статус (видны при расширении)
+                                        if (isServersExpanded) {
+                                            Column(
+                                                modifier = Modifier.weight(1f),
+                                                verticalArrangement = Arrangement.Center
+                                            ) {
+                                                Text(
+                                                    text = "Server Community ${index + 1}",
+                                                    color = AppTheme.colors.textColor,
+                                                    style = MaterialTheme.typography.titleMedium,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis
+                                                )
+                                                Text(
+                                                    text = "${(index + 1) * 14} members • online",
+                                                    color = AppTheme.colors.textColor.copy(alpha = 0.6f),
+                                                    style = MaterialTheme.typography.labelSmall,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis
+                                                )
+                                            }
                                         }
                                     }
                                 }
@@ -478,51 +494,58 @@ fun MainScreen(
                             .background(AppTheme.colors.layoutBackground)
                     ) {
                         //Вертикально прокручиваемый список чатов
-                        LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(vertical = 12.dp, horizontal = 8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            //Временные заглушки для проверки скролла 20 чатов
-                            items(20) { index ->
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(52.dp)
-                                        .clip(RoundedCornerShape(16.dp))
-                                        .background(MaterialTheme.colorScheme.chatBackground)
-                                        .padding(horizontal = 8.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                                ) {
-                                    // Аватар чата
-                                    Box(
+                        if (isChatListEmpty) {
+                            EmptyListAction(
+                                actionText = "Создать чат",
+                                onClick = onCreateChatClick
+                            )
+                        } else {
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(vertical = 12.dp, horizontal = 8.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                //Временные заглушки для проверки скролла 20 чатов
+                                items(20) { index ->
+                                    Row(
                                         modifier = Modifier
-                                            .size(40.dp)
-                                            .clip(CircleShape)
-                                            .background(Color(0xFFEB459E))
-                                    )
+                                            .fillMaxWidth()
+                                            .height(52.dp)
+                                            .clip(RoundedCornerShape(16.dp))
+                                            .background(MaterialTheme.colorScheme.chatBackground)
+                                            .padding(horizontal = 8.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                    ) {
+                                        // Аватар чата
+                                        Box(
+                                            modifier = Modifier
+                                                .size(40.dp)
+                                                .clip(CircleShape)
+                                                .background(Color(0xFFEB459E))
+                                        )
 
-                                    // Имя юзера и последнее сообщение (видны при расширении чатов)
-                                    if (!isServersExpanded) {
-                                        Column(
-                                            modifier = Modifier.weight(1f),
-                                            verticalArrangement = Arrangement.Center
-                                        ) {
-                                            Text(
-                                                text = "User Name ${index + 1}",
-                                                color = AppTheme.colors.textColor,
-                                                style = MaterialTheme.typography.titleMedium,
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis
-                                            )
-                                            Text(
-                                                text = "Last message text goes here...",
-                                                color = AppTheme.colors.textColor.copy(alpha = 0.6f),
-                                                style = MaterialTheme.typography.bodyMedium,
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis
-                                            )
+                                        // Имя юзера и последнее сообщение (видны при расширении чатов)
+                                        if (!isServersExpanded) {
+                                            Column(
+                                                modifier = Modifier.weight(1f),
+                                                verticalArrangement = Arrangement.Center
+                                            ) {
+                                                Text(
+                                                    text = "User Name ${index + 1}",
+                                                    color = AppTheme.colors.textColor,
+                                                    style = MaterialTheme.typography.titleMedium,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis
+                                                )
+                                                Text(
+                                                    text = "Last message text goes here...",
+                                                    color = AppTheme.colors.textColor.copy(alpha = 0.6f),
+                                                    style = MaterialTheme.typography.bodyMedium,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis
+                                                )
+                                            }
                                         }
                                     }
                                 }

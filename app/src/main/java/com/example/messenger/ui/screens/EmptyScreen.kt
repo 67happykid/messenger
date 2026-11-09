@@ -1,21 +1,17 @@
 package com.example.messenger.ui.screens
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import android.content.res.Configuration
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Chat
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,87 +23,83 @@ import com.example.messenger.ui.theme.MessengerTheme
 
 @Composable
 fun EmptyScreen(
-    onActionClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    title: String = "Здесь пока пусто",
-    message: String = "Добавьте друга, чтобы начать общение.",
-    actionText: String = "Добавить друга"
+    onCreateChatClick: () -> Unit,
+    onCreateChannelClick: () -> Unit,
+    inviteToken: String? = null,
+    onSettingsClick: () -> Unit = {},
+    onProfileClick: () -> Unit = {}
 ) {
-    Surface(
-        modifier = modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background,
-        contentColor = MaterialTheme.colorScheme.onBackground
+    MainScreen(
+        inviteToken = inviteToken,
+        onSettingsClick = onSettingsClick,
+        onProfileClick = onProfileClick,
+        isChatListEmpty = true,
+        isChannelListEmpty = true,
+        onCreateChatClick = onCreateChatClick,
+        onCreateChannelClick = onCreateChannelClick
+    )
+}
+
+@Composable
+fun EmptyListAction(
+    actionText: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    BoxWithConstraints(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(8.dp),
+        contentAlignment = Alignment.Center
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .safeDrawingPadding()
-                .padding(24.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
-                modifier = Modifier
-                    .widthIn(max = 420.dp)
-                    .verticalScroll(rememberScrollState())
-                    .padding(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+        if (maxWidth >= 160.dp) {
+            FilledTonalButton(
+                onClick = onClick,
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(
+                    horizontal = 12.dp,
+                    vertical = 12.dp
+                )
+            ) {
+                Text(
+                    text = actionText,
+                    textAlign = TextAlign.Center
+                )
+            }
+        } else {
+            FilledTonalIconButton(
+                onClick = onClick,
+                modifier = Modifier.size(48.dp)
             ) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.Filled.Chat,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(64.dp)
+                    imageVector = Icons.Default.Add,
+                    contentDescription = actionText
                 )
-
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleLarge,
-                    textAlign = TextAlign.Center
-                )
-
-                Text(
-                    text = message,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center
-                )
-
-                Button(onClick = onActionClick) {
-                    Text(
-                        text = actionText,
-                        textAlign = TextAlign.Center
-                    )
-                }
             }
         }
     }
 }
 
 @Preview(
-    name = "Пустой экран - светлый",
-    showBackground = true
+    name = "Главный пустой - светлый",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    widthDp = 360,
+    heightDp = 800
 )
-@Composable
-private fun EmptyScreenLightPreview() {
-    MessengerTheme(
-        darkTheme = false,
-        dynamicColor = false
-    ) {
-        EmptyScreen(onActionClick = {})
-    }
-}
-
 @Preview(
-    name = "Пустой экран - тёмный",
-    showBackground = true
+    name = "Главный пустой - тёмный",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    widthDp = 360,
+    heightDp = 800
 )
 @Composable
-private fun EmptyScreenDarkPreview() {
-    MessengerTheme(
-        darkTheme = true,
-        dynamicColor = false
-    ) {
-        EmptyScreen(onActionClick = {})
+private fun EmptyScreenPreview() {
+    MessengerTheme(dynamicColor = false) {
+        EmptyScreen(
+            onCreateChatClick = {},
+            onCreateChannelClick = {}
+        )
     }
 }

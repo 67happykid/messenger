@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import java.io.IOException
+import androidx.datastore.preferences.core.intPreferencesKey
 
 private val Context.settingsDataStore by preferencesDataStore(
     name = "app_settings"
@@ -25,6 +26,16 @@ class SettingsRepo(
     private object Keys {
         val themeMod = stringPreferencesKey("theme_mod")
         val dynamicColor = booleanPreferencesKey("dynamic_color")
+        val showOnlineStatus = booleanPreferencesKey("show_online_status")
+        val allowFriendInvites = booleanPreferencesKey("allow_friend_invites")
+        val inputDevice = stringPreferencesKey("audio_input_device")
+        val outputDevice = stringPreferencesKey("audio_output_device")
+        val inputVolume = intPreferencesKey("audio_input_volume")
+        val outputVolume = intPreferencesKey("audio_output_volume")
+        val notifyMessages = booleanPreferencesKey("notify_messages")
+        val notifyMentions = booleanPreferencesKey("notify_mentions")
+        val notifyCalls = booleanPreferencesKey("notify_calls")
+        val showNotificationPreview = booleanPreferencesKey("show_notification_preview")
     }
 
     val settings: Flow<AppSettings> = dataStore.data
@@ -44,7 +55,23 @@ class SettingsRepo(
 
             AppSettings(
                 themeMod = themeMod,
-                dynamicColor = preferences[Keys.dynamicColor] ?: true
+                dynamicColor = preferences[Keys.dynamicColor] ?: true,
+                privacy = PrivacySettings(
+                    showOnlineStatus = preferences[Keys.showOnlineStatus] ?: true,
+                    allowFriendInvites = preferences[Keys.allowFriendInvites] ?: true
+                ),
+                sound = SoundSettings(
+                    inputDeviceKey = preferences[Keys.inputDevice],
+                    outputDeviceKey = preferences[Keys.outputDevice],
+                    inputVolume = (preferences[Keys.inputVolume] ?: 100).coerceIn(0, 100),
+                    outputVolume = (preferences[Keys.outputVolume] ?: 100).coerceIn(0, 100)
+                ),
+                notifications = NotificationSettings(
+                    messages = preferences[Keys.notifyMessages] ?: true,
+                    mentions = preferences[Keys.notifyMentions] ?: true,
+                    calls = preferences[Keys.notifyCalls] ?: true,
+                    showPreview = preferences[Keys.showNotificationPreview] ?: false
+                )
             )
         }
         .distinctUntilChanged()
@@ -58,6 +85,66 @@ class SettingsRepo(
     suspend fun setDynamicColor(enabled: Boolean){
         dataStore.edit { preferences ->
             preferences[Keys.dynamicColor] = enabled
+        }
+    }
+
+    suspend fun setShowOnlineStatus(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[Keys.showOnlineStatus] = enabled
+        }
+    }
+
+    suspend fun setAllowFriendInvites(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[Keys.allowFriendInvites] = enabled
+        }
+    }
+
+    suspend fun updateSound(change: SoundChange) {
+        dataStore.edit { preferences ->
+            when (change) {
+                is SoundChange.InputDevice -> {
+                    val key = change.key
+                    if (key == null) {
+                        preferences.remove(Keys.inputDevice)
+                    } else {
+                        preferences[Keys.inputDevice] = key
+                    }
+                }
+
+                is SoundChange.OutputDevice -> {
+                    val key = change.key
+                    if (key == null) {
+                        preferences.remove(Keys.outputDevice)
+                    } else {
+                        preferences[Keys.outputDevice] = key
+                    }
+                }
+
+                is SoundChange.InputVolume -> {
+                    preferences[Keys.inputVolume] = change.percent.coerceIn(0, 100)
+                }
+
+                is SoundChange.OutputVolume -> {
+                    preferences[Keys.outputVolume] = change.percent.coerceIn(0, 100)
+                }
+            }
+        }
+    }
+
+    suspend fun setNotificationOption(
+        option: NotificationOption,
+        enabled: Boolean
+    ) {
+        val key = when (option) {
+            NotificationOption.MESSAGES -> Keys.notifyMessages
+            NotificationOption.MENTIONS -> Keys.notifyMentions
+            NotificationOption.CALLS -> Keys.notifyCalls
+            NotificationOption.SHOW_PREVIEW -> Keys.showNotificationPreview
+        }
+
+        dataStore.edit { preferences ->
+            preferences[key] = enabled
         }
     }
 }

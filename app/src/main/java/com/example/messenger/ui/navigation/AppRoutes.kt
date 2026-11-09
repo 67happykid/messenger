@@ -14,3 +14,12 @@ data object AccountRoute : NavKey
 
 @Serializable
 data object AppearanceRoute : NavKey
+
+@Serializable
+data object PrivacyRoute : NavKey
+
+@Serializable
+data object SoundRoute : NavKey
+
+@Serializable
+data object NotificationsRoute : NavKey

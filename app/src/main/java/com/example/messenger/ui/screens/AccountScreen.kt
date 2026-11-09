@@ -1,6 +1,7 @@
 package com.example.messenger.ui.screens
 
 import android.content.res.Configuration
+import android.util.Patterns
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,11 +21,14 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
@@ -35,11 +39,27 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.pm.ShortcutInfoCompat
 import com.example.messenger.ui.theme.MessengerTheme
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
 
 data class AccountUIState(
     val username: String,
     val email: String? = null,
-    val phone: String? = null
+    val phone: String? = null,
+    val showUsernameDialog: Boolean = false,
+    val usernameDraft: String = "",
+    val usernameError: String? = null,
+    val isSavingUsername: Boolean = false,
+    val showEmailDialog: Boolean = false,
+    val emailDraft: String = "",
+    val emailError: String? = null,
+    val isSavingEmail: Boolean = false,
+    val showPhoneDialog: Boolean = false,
+    val phoneDraft: String = "",
+    val phoneError: String? = null,
+    val isSavingPhone: Boolean = false,
+    val isLoading: Boolean = false,
+    val loadError: String? = null
 )
 
 enum class AccountAction(val title: String) {
@@ -65,10 +85,19 @@ fun AccountScreen(
     state: AccountUIState,
     onBackClick: () -> Unit,
     onAction: (AccountAction) -> Unit,
+    onUsernameDraftChange: (String) -> Unit,
+    onUsernameSave: () -> Unit,
+    onUsernameDismiss: () -> Unit,
+    onEmailDraftChange: (String) -> Unit,
+    onEmailSave: () -> Unit,
+    onEmailDismiss: () -> Unit,
+    onPhoneDraftChange: (String) -> Unit,
+    onPhoneSave: () -> Unit,
+    onPhoneDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize(),
         color = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground
@@ -169,6 +198,195 @@ fun AccountScreen(
                 )
             }
         }
+    }
+
+    if (state.showUsernameDialog) {
+        AlertDialog(
+            onDismissRequest = onUsernameDismiss,
+            title = {
+                Text("Имя пользователя")
+            },
+            text = {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(
+                        text = "Демонстрационный профиль. " +
+                                "Изменение не отправляется на сервер.",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+
+                    OutlinedTextField(
+                        value = state.usernameDraft,
+                        onValueChange = onUsernameDraftChange,
+                        label = {
+                            Text("Новое имя")
+                        },
+                        singleLine = true,
+                        enabled = !state.isSavingUsername,
+                        isError = state.usernameError != null,
+                        supportingText = {
+                            Text(
+                                text = state.usernameError
+                                    ?: "От 3 до 32 символов"
+                            )
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = onUsernameSave,
+                    enabled = !state.isSavingUsername
+                ) {
+                    Text(
+                        text = if (state.isSavingUsername) {
+                            "Сохранение..."
+                        } else {
+                            "Сохранить"
+                        }
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = onUsernameDismiss,
+                    enabled = !state.isSavingUsername
+                ) {
+                    Text("Отмена")
+                }
+            }
+        )
+    }
+
+    if (state.showEmailDialog) {
+        AlertDialog(
+            onDismissRequest = onEmailDismiss,
+            title = {
+                Text("Электронная почта")
+            },
+            text = {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(
+                        text = "Демонстрационный профиль. " +
+                                "Письмо подтверждения не отправляется.",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+
+                    OutlinedTextField(
+                        value = state.emailDraft,
+                        onValueChange = onEmailDraftChange,
+                        label = {
+                            Text("Новая почта")
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Email
+                        ),
+                        singleLine = true,
+                        enabled = !state.isSavingEmail,
+                        isError = state.emailError != null,
+                        supportingText = {
+                            Text(
+                                text = state.emailError
+                                    ?: "Например: user@example.com"
+                            )
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = onEmailSave,
+                    enabled = !state.isSavingEmail
+                ) {
+                    Text(
+                        text = if (state.isSavingEmail) {
+                            "Сохранение..."
+                        } else {
+                            "Сохранить"
+                        }
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = onEmailDismiss,
+                    enabled = !state.isSavingEmail
+                ) {
+                    Text("Отмена")
+                }
+            }
+        )
+    }
+
+    if (state.showPhoneDialog) {
+        AlertDialog(
+            onDismissRequest = onPhoneDismiss,
+            title = {
+                Text("Номер телефона")
+            },
+            text = {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(
+                        text = "Демонстрационный профиль. " +
+                                "SMS-подтверждение не отправляется.",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+
+                    OutlinedTextField(
+                        value = state.phoneDraft,
+                        onValueChange = onPhoneDraftChange,
+                        label = {
+                            Text("Новый номер")
+                        },
+                        placeholder = {
+                            Text("+7 (999) 123-45-67")
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Phone
+                        ),
+                        singleLine = true,
+                        enabled = !state.isSavingPhone,
+                        isError = state.phoneError != null,
+                        supportingText = {
+                            Text(
+                                text = state.phoneError
+                                    ?: "Укажите +, код страны и номер"
+                            )
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = onPhoneSave,
+                    enabled = !state.isSavingPhone
+                ) {
+                    Text(
+                        text = if (state.isSavingPhone) {
+                            "Сохранение..."
+                        } else {
+                            "Сохранить"
+                        }
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = onPhoneDismiss,
+                    enabled = !state.isSavingPhone
+                ) {
+                    Text("Отмена")
+                }
+            }
+        )
     }
 }
 
@@ -279,7 +497,16 @@ private fun AccountScreenPreview() {
                 phone = null
             ),
             onBackClick = {},
-            onAction = {}
+            onAction = {},
+            onUsernameDraftChange = {},
+            onUsernameSave = {},
+            onUsernameDismiss = {},
+            onEmailDraftChange = {},
+            onEmailSave = {},
+            onEmailDismiss = {},
+            onPhoneDraftChange = {},
+            onPhoneSave = {},
+            onPhoneDismiss = {},
         )
     }
 }

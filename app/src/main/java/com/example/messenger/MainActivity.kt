@@ -26,6 +26,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.messenger.ui.settings.AppSettingsViewModel
+import com.example.messenger.data.user.DemoUserRepo
 
 class MainActivity : ComponentActivity() {
 
@@ -33,6 +34,10 @@ class MainActivity : ComponentActivity() {
 
     private val settingsRepo by lazy {
         SettingsRepo(applicationContext)
+    }
+
+    private val userRepo by lazy {
+        DemoUserRepo(applicationContext)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -91,6 +96,18 @@ class MainActivity : ComponentActivity() {
 
                     dynamicColor = settings.dynamicColor,
                     onDynamicColorChange = settingsViewModel::setDynamicColor,
+
+                    userRepo = userRepo,
+
+                    privacy = settings.privacy,
+                    onShowOnlineStatusChange = settingsViewModel::setShowOnlineStatus,
+                    onAllowFriendInvitesChange = settingsViewModel::setAllowFriendInvites,
+
+                    sound = settings.sound,
+                    onSoundChange = settingsViewModel::updateSound,
+
+                    notifications = settings.notifications,
+                    onNotificationOptionChange = settingsViewModel::setNotificationOption,
 
                     onSettingsSectionClick = { section ->
                         Toast.makeText(

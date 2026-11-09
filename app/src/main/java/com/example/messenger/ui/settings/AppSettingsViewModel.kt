@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import com.example.messenger.data.settings.SoundChange
+import com.example.messenger.data.settings.NotificationOption
 
 data class AppSettingsUiState(
     val settings: AppSettings? = null,
@@ -47,6 +49,33 @@ class AppSettingsViewModel(
     fun setDynamicColor(enabled: Boolean) {
         saveSettings {
             settingsRepo.setDynamicColor(enabled)
+        }
+    }
+
+    fun setShowOnlineStatus(enabled: Boolean) {
+        saveSettings {
+            settingsRepo.setShowOnlineStatus(enabled)
+        }
+    }
+
+    fun setAllowFriendInvites(enabled: Boolean) {
+        saveSettings {
+            settingsRepo.setAllowFriendInvites(enabled)
+        }
+    }
+
+    fun updateSound(change: SoundChange) {
+        saveSettings {
+            settingsRepo.updateSound(change)
+        }
+    }
+
+    fun setNotificationOption(
+        option: NotificationOption,
+        enabled: Boolean
+    ) {
+        saveSettings {
+            settingsRepo.setNotificationOption(option, enabled)
         }
     }
 

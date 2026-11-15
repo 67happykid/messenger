@@ -1,6 +1,7 @@
-package com.example.messenger.ui.screens
+package com.example.messenger.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.example.messenger.ui.screens.ChatMessage
 import com.example.messenger.ui.state.PrivateMessagesUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

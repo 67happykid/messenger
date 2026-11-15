@@ -23,7 +23,8 @@ data class AppColors(
     val strokeColor: Color,
     val textColor: Color,
     val messageBackground: Color,
-    val iconBackground: Color
+    val iconBackground: Color,
+    val foundMessBackground: Color
 )
 
 val DarkAppColors = AppColors(
@@ -34,7 +35,8 @@ val DarkAppColors = AppColors(
     strokeColor = StrokeColorDark,
     textColor = TextColorDark,
     messageBackground = MessageBackgroundDark,
-    iconBackground = IconBackgroundDark
+    iconBackground = IconBackgroundDark,
+    foundMessBackground = FoundedMessBackground
 )
 
 val LightAppColors = AppColors(
@@ -45,35 +47,9 @@ val LightAppColors = AppColors(
     strokeColor = StrokeColorLight,
     textColor = TextColorLight,
     messageBackground = MessageBackgroundLight,
-    iconBackground = IconBackgroundLight
+    iconBackground = IconBackgroundLight,
+    foundMessBackground = FoundedMessBackground
 
-)
-
-data class AppColors(
-    val mainBackground: Color,
-    val layoutBackground: Color,
-    val chatBackground: Color,
-    val searchField: Color,
-    val strokeColor: Color,
-    val textColor: Color
-)
-
-val DarkAppColors = AppColors(
-    mainBackground = MainBackgroundDark,
-    layoutBackground = LayoutBackgroundDark,
-    chatBackground = ChatBackgroundDark,
-    searchField = SearchFieldDark,
-    strokeColor = StrokeColorDark,
-    textColor = TextColorDark
-)
-
-val LightAppColors = AppColors(
-    mainBackground = MainBackgroundLight,
-    layoutBackground = LayoutBackgroundLight,
-    chatBackground = ChatBackgroundLight,
-    searchField = SearchFieldLight,
-    strokeColor = StrokeColorLight,
-    textColor = TextColorLight
 )
 
 private val DarkColorScheme = darkColorScheme(

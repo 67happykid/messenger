@@ -1,7 +1,6 @@
 package com.example.messenger.ui.screens
 
 import android.widget.Toast
-import androidx.collection.emptyLongSet
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,10 +37,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,8 +55,9 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.messenger.ui.theme.AppTheme
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.messenger.ui.theme.AppTheme
+import com.example.messenger.ui.viewmodel.PrivateMessagesViewModel
 
 
 data class ChatMessage(
@@ -77,9 +75,6 @@ fun PrivateMessagesScreen(
     onCallClick: () -> Unit = {},
     onVideocallClick: () -> Unit = {},
 ) {
-    // var searchQuery by rememberSaveable { mutableStateOf("") }
-    // var messageQuery by rememberSaveable { mutableStateOf("") }
-    // val messages = rememberSaveable() { mutableStateListOf<ChatMessage>() }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     var isDrafted by remember { mutableStateOf(false) }
 
@@ -112,7 +107,7 @@ fun PrivateMessagesScreen(
                     Text(
                         text = "User Nickname",
                         color = AppTheme.colors.textColor,
-                        fontSize = 22.sp,
+                        style = MaterialTheme.typography.titleLarge,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier
@@ -173,9 +168,8 @@ fun PrivateMessagesScreen(
                             value = state.searchQuery,
                             onValueChange = viewModel::updateSearchQuery,
                             singleLine = true,
-                            textStyle = TextStyle(
+                            textStyle = MaterialTheme.typography.bodySmall.copy(
                                 color = AppTheme.colors.textColor,
-                                fontSize = 13.sp
                             ),
                             keyboardOptions = KeyboardOptions(
                                 imeAction = ImeAction.Search
@@ -194,8 +188,7 @@ fun PrivateMessagesScreen(
                                         Text(
                                             "Search",
                                             color = AppTheme.colors.textColor,
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            fontSize = 13.sp,
+                                            style = MaterialTheme.typography.bodySmall,
                                             maxLines = 1
                                         )
                                     }
@@ -281,7 +274,7 @@ fun PrivateMessagesScreen(
                                 .clip(RoundedCornerShape(16.dp))
                                 .background(
                                     if (state.messages[index].id in state.matchingMessageIds)
-                                        Color(0xFF6FAFCF)
+                                        AppTheme.colors.foundMessBackground
                                     else
                                         AppTheme.colors.messageBackground
                                 )
@@ -313,7 +306,7 @@ fun PrivateMessagesScreen(
                                         append(state.messages[index].text)
                                 },
                                 color = AppTheme.colors.textColor,
-                                fontSize = 16.sp,
+                                style = MaterialTheme.typography.bodyLarge,
                                 modifier = Modifier
                                     .padding(horizontal = 16.dp, vertical = 16.dp),
                             )
@@ -352,7 +345,7 @@ fun PrivateMessagesScreen(
                                     Text(
                                         "Write message",
                                         color = AppTheme.colors.textColor,
-                                        fontSize = 13.sp,
+                                        style = MaterialTheme.typography.bodySmall,
                                         maxLines = 6
                                     )
                                 }
@@ -362,7 +355,6 @@ fun PrivateMessagesScreen(
                     )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
-                val ctx = LocalContext.current
                 Box(
                     modifier = Modifier
                         .size(36.dp)

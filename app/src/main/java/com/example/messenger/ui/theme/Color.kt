@@ -1,6 +1,5 @@
 package com.example.messenger.ui.theme
 
-import android.os.Message
 import androidx.compose.ui.graphics.Color
 
 //Тёмная тема
@@ -12,6 +11,9 @@ val SearchFieldDark = Color(0xFF2D2D2D)
 val TextColorDark = Color(0xFFFFFFFF)
 val MessageBackgroundDark = Color(0xFF1C1F1F)
 val IconBackgroundDark = Color(0xFF333333)
+
+val FoundedMessBackground = Color(0xFF6FAFCF)
+
 
 //Светлая тема
 val MainBackgroundLight = Color(0xFFFFFFFF)

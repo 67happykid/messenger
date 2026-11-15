@@ -13,6 +13,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import com.example.messenger.ui.theme.MessageBackgroundDark
 
 data class AppColors(
     val mainBackground: Color,
@@ -20,7 +21,10 @@ data class AppColors(
     val chatBackground: Color,
     val searchField: Color,
     val strokeColor: Color,
-    val textColor: Color
+    val textColor: Color,
+    val messageBackground: Color,
+    val iconBackground: Color,
+    val foundMessBackground: Color
 )
 
 val DarkAppColors = AppColors(
@@ -29,7 +33,10 @@ val DarkAppColors = AppColors(
     chatBackground = ChatBackgroundDark,
     searchField = SearchFieldDark,
     strokeColor = StrokeColorDark,
-    textColor = TextColorDark
+    textColor = TextColorDark,
+    messageBackground = MessageBackgroundDark,
+    iconBackground = IconBackgroundDark,
+    foundMessBackground = FoundedMessBackground
 )
 
 val LightAppColors = AppColors(
@@ -38,7 +45,11 @@ val LightAppColors = AppColors(
     chatBackground = ChatBackgroundLight,
     searchField = SearchFieldLight,
     strokeColor = StrokeColorLight,
-    textColor = TextColorLight
+    textColor = TextColorLight,
+    messageBackground = MessageBackgroundLight,
+    iconBackground = IconBackgroundLight,
+    foundMessBackground = FoundedMessBackground
+
 )
 
 private val DarkColorScheme = darkColorScheme(

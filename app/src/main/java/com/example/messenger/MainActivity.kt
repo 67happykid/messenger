@@ -10,11 +10,12 @@ import androidx.compose.runtime.setValue
 import com.example.messenger.ui.screens.MainScreen
 import com.example.messenger.ui.theme.MessengerTheme
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.messenger.ui.screens.ErrorScreen
 import com.example.messenger.ui.screens.LoadingScreen
+import com.example.messenger.ui.screens.ServerScreen
 import kotlin.random.Random
+import com.example.messenger.ui.navigation.ServerNavigation
 
 class MainActivity : ComponentActivity() {
 
@@ -33,7 +34,8 @@ class MainActivity : ComponentActivity() {
                     1 -> LoadingScreen()
                     2 -> ErrorScreen()
                 }*/
-                MainScreen(inviteToken = inviteToken)
+//                MainScreen(inviteToken = inviteToken)
+                ServerNavigation()
             }
         }
     }

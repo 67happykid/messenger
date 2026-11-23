@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Messenger</string>
+    <string name="add_friend">Добавить друга</string>
+    <string name="search">Search</string>
 </resources>
